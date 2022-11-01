@@ -1,23 +1,16 @@
 import cv2 as cv
 import numpy as np
-from PIL import ImageEnhance, Image
-from pillow_lut import rgb_color_enhance
-from matplotlib import cm
+
 
 
 class processed_image():
 
     def __init__(self, pathofimage):
         self.image = cv.imread(path)
+        self.allsquare = self.image.shape[0]*self.image.shape[1]
 
    
-    def filtering(self):
-        n = 5
-        if self.image.shape[0]>self.image.shape[1]:
-            n += self.image.shape[0]//1000
-        else:
-            n += self.image.shape[1]//1000
-
+    def filtering(self, n):
         self.image = cv.GaussianBlur(sel.image, (n, n), 0)
 
 
@@ -25,6 +18,7 @@ class processed_image():
         self.image = cv.cvtColor(sefl.image, cv.COLOR_BGR2HSV)
 
 
+    #частотное распределение пикселей по цветам
     def hues(self):
         HueUnique = np.unique(self.image[:,:,0])
         HueUnique = HueUnique.astype('int32')
@@ -33,39 +27,30 @@ class processed_image():
 
         for u in range(HueUnique.size):
                 self.hue_values[u, 1] = np.sum(hsv[:,:,0]==self.hue_values[u, 0])
-
-   
-    #нахождение диапозонов цветов с помощью среднеквадратичного отклонения
-    def split_colors(self):
-        self.color_spaces = []
-
-        hues_mean = self.hue_values.mean()
-        less_mean = self.hue_values[:,1]<hues_mean
-        less_mean = self.hue_values[less_mean]
-        more_mean = self.hue_values[:,1]>hues_mean
-        more_mean = self.hue_values[more_mean]
-        
-        self.color_spaces.append(less_mean)
-
-        while more_mean.size!=0:
-            counter = 0
             
 
 
-
 class square(processed_image):
-    
-    def __init__(self, image, space):
+   
+    #c - color
+    def __init__(self, image, cspace):
         super().__init__(image)
-        self.space = space
+        self.cspace = cspace
+        self.coords = np.array([1, 1], ndmin=2)
+        self.color = cspace[:,0].mean()
+        self.por = np.sum(self.space[:,1])/self.allsquare  #пористость
 
 
     def find_coords(self):
-        pass
-
-
-    def colored_space(self):
-        pass
+        for u in hues[:,0]:
+            temp1 = np.where(self.image[:,:,0]==u)
+            temp2 = np.ones((temp1[0].size, 2))
+                            
+            temp2[:,0] = temp2[:,0]*temp1[0]
+            temp2[:,1] = temp2[:,1]*temp1[1]
+                                        
+            self.coords = np.concatenate((self.coords, temp2))
+        
 
 
 
