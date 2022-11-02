@@ -69,6 +69,8 @@ def colored(image, coords, color):
     py = coords[:,1]
 
     image[px,py,0] = color
+    image[px,py,1] = 255
+    image[px,py,2] = 255
 
     return image
 
@@ -94,6 +96,7 @@ if __name__ == "__main__":
     for sqrs in mySqrs:
         sqrs.make_hsv()
         end_image = colored(end_image, sqrs.find_coords(), sqrs.color)
-
+    
+    end_image = cv.cvtColor(end_image, cv.COLOR_HSV2BGR)
     cv.imshow('', end_image)
     cv.waitKey(0)
