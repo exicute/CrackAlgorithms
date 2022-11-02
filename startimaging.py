@@ -25,16 +25,14 @@ def split_colors(hue_values):
     less_mean = hue_values[less_mean]
     color_spaces.append(less_mean)
 
-    more_mean = hue_values[:,1]>hues_mean
+    more_mean = hue_values[:,1]>=hues_mean
     more_mean = hue_values[more_mean]
     more_mean0 = more_mean[:,0]
     
 
-    mStd = more_mean0.std()+2  #среднеквадратичное отклонения для 0 столба(зн-я hue)
+    mStd = more_mean0.std()*2  #среднеквадратичное отклонения для 0 столба(зн-я hue)
                              #подобрать наиболее подходящее значение(на основе процентилей)
-    
     #c - current
-
     cind = 0
     counter = 0
     while more_mean0.size!=0:
@@ -51,20 +49,29 @@ def split_colors(hue_values):
             continue
         
         else:
-            color_spaces.append(hue_values[clist])
+            tempind = np.array([], dtype='int16')
+            for i in clist:
+                ind = np.where(hue_values[:,0]==i)
+                tempind = np.concatenate((tempind, ind[0]))
+           
+            color_spaces.append(hue_values[tempind])
             temp = np.where(more_mean0[(more_mean0<cnum+mStd)&(more_mean0>cnum-mStd)])[0]
             more_mean0 = np.delete(more_mean0, temp)
+
             cind = 0
             counter = 0
-
-            #съехал
 
     return color_spaces
 
 
+def colored(image, coords, color):
+    px = coords[:,0]
+    py = coords[:,1]
 
-def colored():
-    pass
+    image[px,py,0] = color
+
+    return image
+
 
 
 if __name__ == "__main__":
@@ -72,14 +79,21 @@ if __name__ == "__main__":
 
     #полное изображение
     myImg = processed_image(path)
-    n = find_n_filter(myImg.image)
+    n = find_n_filter(myImg.image)-1
     myImg.filtering(5)
     myImg.make_hsv()
     chue_values = myImg.hues()
 
     #разделение на области
-    mySpaces = []
+    mySqrs = []
     for clist in split_colors(chue_values):
-        mySpaces.append(square(path, clist))
-    print(split_colors(chue_values))
+        mySqrs.append(square(path, clist))
+    
+    end_image = cv.imread(path)
+    end_image = cv.cvtColor(end_image, cv.COLOR_BGR2HSV)
+    for sqrs in mySqrs:
+        sqrs.make_hsv()
+        end_image = colored(end_image, sqrs.find_coords(), sqrs.color)
 
+    cv.imshow('', end_image)
+    cv.waitKey(0)
