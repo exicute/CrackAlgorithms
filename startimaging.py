@@ -77,24 +77,28 @@ def colored(image, coords, color):
 
 
 if __name__ == "__main__":
-    path = r'Images/blurimg2.jpg'
+    path = r'Images/testimg2.jpg'
 
     #полное изображение
     myImg = processed_image(path)
     n = find_n_filter(myImg.image)-1
-    myImg.filtering(5)
+
+    myImg.filtering(n)
+
+    #cv.imshow('', thisImg)
+    #cv.waitKey(0)
+
     myImg.make_hsv()
+
     chue_values = myImg.hues()
 
     #разделение на области
     mySqrs = []
     for clist in split_colors(chue_values):
-        mySqrs.append(square(path, clist))
+        mySqrs.append(square(myImg.image, clist))
     
-    end_image = cv.imread(path)
-    end_image = cv.cvtColor(end_image, cv.COLOR_BGR2HSV)
+    end_image = np.zeros_like(myImg.image)
     for sqrs in mySqrs:
-        sqrs.make_hsv()
         end_image = colored(end_image, sqrs.find_coords(), sqrs.color)
     
     end_image = cv.cvtColor(end_image, cv.COLOR_HSV2BGR)

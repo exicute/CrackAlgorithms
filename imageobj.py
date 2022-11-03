@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from PIL import Image, ImageFilter
 
 
 
@@ -8,10 +9,15 @@ class processed_image():
     def __init__(self, pathofimage):
         self.image = cv.imread(pathofimage)
         self.allsquare = self.image.shape[0]*self.image.shape[1]
+        self.img_path = pathofimage
 
    
     def filtering(self, n=5):
-        self.image = cv.GaussianBlur(self.image, (n, n), 0)
+        im = Image.open(self.img_path).convert('RGB')
+        im1 = im.filter(ImageFilter.GaussianBlur(radius = n))
+        open_cv_image = np.array(im1) 
+        # Convert RGB to BGR 
+        self.image = open_cv_image[:, :, ::-1].copy() 
 
 
     def make_hsv(self):
@@ -36,10 +42,10 @@ class square(processed_image):
    
     #c - color
     def __init__(self, image, cspace):
-        super().__init__(image)
+        self.image = image  #основное обработанное изображение
         self.cspace = cspace
         self.color = int(cspace[:,0].mean())
-        self.por = np.sum(self.cspace[:,1])/self.allsquare  #пористость
+        self.por = np.sum(self.cspace[:,1])/self.image  #пористость
 
 
     def find_coords(self):
