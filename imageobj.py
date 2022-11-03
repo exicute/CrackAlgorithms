@@ -45,7 +45,7 @@ class square(processed_image):
         self.image = image  #основное обработанное изображение
         self.cspace = cspace
         self.color = int(cspace[:,0].mean())
-        self.por = np.sum(self.cspace[:,1])/self.image  #пористость
+        self.por = np.sum(self.cspace[:,1])/self.image.size  #пористость
 
 
     def find_coords(self):

@@ -40,8 +40,9 @@ def split_colors(hue_values):
         clist = more_mean0[(more_mean0<cnum+mStd)&(more_mean0>cnum-mStd)]
         
         if clist.size == 1:
-            color_spaces.append(np.array([cnum]))
-            more_mean0 = more_mean0[more_mean0!=cnum]
+            tempInd = np.where(hue_values[:,0]==cnum)
+            color_spaces.append(hue_values[tempInd])
+            more_mean0 = np.delete(more_mean0, cind)
 
         elif clist.size > counter:
             counter = clist.size
@@ -77,16 +78,13 @@ def colored(image, coords, color):
 
 
 if __name__ == "__main__":
-    path = r'Images/testimg2.jpg'
+    path = r'Images/testimg3.jpg'
 
     #полное изображение
     myImg = processed_image(path)
     n = find_n_filter(myImg.image)-1
 
     myImg.filtering(n)
-
-    #cv.imshow('', thisImg)
-    #cv.waitKey(0)
 
     myImg.make_hsv()
 
