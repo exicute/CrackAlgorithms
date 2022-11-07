@@ -78,7 +78,7 @@ def colored(image, coords, color):
 
 
 if __name__ == "__main__":
-    path = r'Images/testimg3.jpg'
+    path = r'Images/testimg2.jpg'
 
     #полное изображение
     myImg = processed_image(path)
