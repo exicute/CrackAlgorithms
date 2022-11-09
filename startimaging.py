@@ -78,7 +78,8 @@ def colored(image, coords, color):
 
 
 if __name__ == "__main__":
-    path = r'Images/testimg2.jpg'
+    #нужно исключить не яркие и не контрастные пиксели(через np.where??)
+    path = r'Images/testimg1.jpg'
 
     #полное изображение
     myImg = processed_image(path)
@@ -91,6 +92,9 @@ if __name__ == "__main__":
     chue_values = myImg.hues()
 
     #разделение на области
+    #Т.к. добавлено разделение на яркости и контрастности
+    #необходимо понять один у нас цвет или несколько:
+    #при каком то условии убирать разделение по среднему на верхнее и нижнее
     mySqrs = []
     for clist in split_colors(chue_values):
         mySqrs.append(square(myImg.image, clist))

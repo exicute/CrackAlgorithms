@@ -24,15 +24,25 @@ class processed_image():
         self.image = cv.cvtColor(self.image, cv.COLOR_BGR2HSV)
 
 
+    def saturationsvalues(self, image):
+        saturation = image[:,:,1]
+        value = image[:,:,2]
+
+        parts = (saturation[saturation<saturation.mean()//2], value[value<value.mean()//2])
+        filtredimg = image[(saturation<saturation.mean()//2)&(value<value.mean()//2)]
+
+        return (filtredimg, parts)
+
+
     #частотное распределение пикселей по цветам
-    def hues(self):
-        HueUnique = np.unique(self.image[:,:,0])
+    def hues(self, allvalues):
+        HueUnique = np.unique(allvalues[:,:,0])
         HueUnique = HueUnique.astype('int32')
         HueUnique = HueUnique.reshape(HueUnique.size, 1)
         hue_values = np.concatenate((HueUnique, np.ones((HueUnique.size, 1), dtype='int32')), axis=1)
 
         for u in range(HueUnique.size):
-            hue_values[u, 1] = np.sum(self.image[:,:,0]==hue_values[u, 0])
+            hue_values[u, 1] = np.sum(allvalues[:,:,0]==hue_values[u, 0])
 
         return hue_values
             
@@ -68,7 +78,9 @@ class square(processed_image):
 
 
 if __name__ == "__main__":
-    path = r'Images/blurimg3.jpg'
-    print(change_hsv(path))
-    cv.imshow('', change_hsv(path))
-    cv.waitKey(0)
+    path = r'Images/testimg3.jpg'
+
+    image = processed_image(path)
+    end_image = image.saturationsvalues(image.image)[0]
+
+    print( end_image)
