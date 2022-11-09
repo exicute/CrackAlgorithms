@@ -29,7 +29,7 @@ class processed_image():
         value = image[:,:,2]
 
         parts = (saturation[saturation<saturation.mean()//2], value[value<value.mean()//2])
-        filtredimg = image[(saturation<saturation.mean()//2)&(value<value.mean()//2)]
+        filtredimg = image[(saturation>saturation.mean()//2)&(value>value.mean()//2)]
 
         return (filtredimg, parts)
 
@@ -81,6 +81,7 @@ if __name__ == "__main__":
     path = r'Images/testimg3.jpg'
 
     image = processed_image(path)
+    image.make_hsv()
     end_image = image.saturationsvalues(image.image)[0]
 
-    print( end_image)
+    print(end_image.ndim)

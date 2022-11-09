@@ -79,7 +79,7 @@ def colored(image, coords, color):
 
 if __name__ == "__main__":
     #нужно исключить не яркие и не контрастные пиксели(через np.where??)
-    path = r'Images/testimg1.jpg'
+    path = r'Images/testimg3.jpg'
 
     #полное изображение
     myImg = processed_image(path)
@@ -89,13 +89,17 @@ if __name__ == "__main__":
 
     myImg.make_hsv()
 
-    chue_values = myImg.hues()
+    SatVal = myImg.saturationsvalues(myImg.image)
+    filtredsv = SatVal[0]
+    sat = SatVal[1][0]
+    val = SatVal[1][1]
 
+    chue_values = myImg.hues(filtredsv[np.newaxis])
     #разделение на области
     #Т.к. добавлено разделение на яркости и контрастности
     #необходимо понять один у нас цвет или несколько:
     #при каком то условии убирать разделение по среднему на верхнее и нижнее
-    mySqrs = []
+    mySqrs = [square(myImg.image, sat[np.newaxis]),square(myImg.image, val[np.newaxis])]
     for clist in split_colors(chue_values):
         mySqrs.append(square(myImg.image, clist))
     
