@@ -21,22 +21,34 @@ def contours(image, draw):
         rect = cv.minAreaRect(actContour)
         box = cv.boxPoints(rect)
         box = np.uint0(box)
+        boxS = rect[1][0]*rect[1][1]
+        
+        areaLength = cv.contourArea(actContour)
+        arcL = cv.arcLength(actContour, True)
     
         longSide = 0
         shortSide = 0
-        side1 = np.sqrt((box[0][0]-box[1][0])**2+(box[0][1]-box[1][1])**2)
-        side2 = np.sqrt((box[1][0]-box[2][0])**2+(box[1][1]-box[2][1])**2)
-        if side1<side2:
-            shortSide = side1
-            longSide = side2
+        if rect[1][0]<rect[1][1]:
+            shortSide = rect[1][0]
+            longSide = rect[1][1]
         else:
-            shortSide = side2
-            longSide = side1
-
-        areaLength = cv.contourArea(actContour)
-        arcL = cv.arcLength(actContour, True)
-        print(shortSide, arcL)
-        if (areaLength<80) or ((arcL)==0 or ((areaLength)/pow(arcL, 2))>0.02):
+            shortSide = rect[1][1]
+            longSide = rect[1][0]
+        
+        #отношение площади трещины к площади прямоугольника,
+        #приведение меньшей стороны к данному отношение
+        #удлинение длинной за счет деления площади прямоугольника на расчитанную меньшую сторону
+        try:
+            boxtocontourS = areaLength/(shortSide*longSide)
+            contourShort = shortSide*boxtocontourS
+            contourLong = boxS/contourShort
+        except:
+            boxtocontourS = 0
+            contourShort = 1
+            contourLong = 0
+        
+        #Параметры по которым находится трещина
+        if (areaLength<80) or ((arcL)==0 or ((areaLength)/pow(arcL, 2))>0.02) or (contourLong/contourShort<100):
             continue
         else:
             end_contours.append(actContour)
