@@ -25,13 +25,25 @@ class processed_image():
 
 
     def saturationsvalues(self, image):
+        filtredimage = image.copy()
+        
+        #координаты не подходящих контрастностей
         saturation = image[:,:,1]
-        value = image[:,:,2]
+        sat_mask = saturation<saturation.mean()//3
+        sat_coord = np.where(sat_mask)
+        filtredimage[sat_coord[0], sat_coord[1]] = [1000, 1000, 1000]
+        
+        #координаты не подходящих яркостей
+        value = filtredimage[:,:,2]
+        val_mask = value<value.mean()//3
+        val_coord = np.where(val_mask)
+        filtredimage[val_coord[0], val_coord[1]] = [1000, 1000, 1000]
+        
+        parts = [sat_coord, val_coord]
 
-        parts = (saturation[saturation<saturation.mean()//2], value[value<value.mean()//2])
-        filtredimg = image[(saturation>saturation.mean()//2)&(value>value.mean()//2)]
+        filtred = image[(saturation>=saturation.mean()//2)&(value>=value.mean()//2)]
 
-        return (filtredimg, parts)
+        return (filtred, parts, filtredimage)
 
 
     #частотное распределение пикселей по цветам

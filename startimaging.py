@@ -91,17 +91,19 @@ if __name__ == "__main__":
 
     SatVal = myImg.saturationsvalues(myImg.image)
     filtredsv = SatVal[0]
+    filtredimage = SatVal[2]
     sat = SatVal[1][0]
     val = SatVal[1][1]
-
+    
     chue_values = myImg.hues(filtredsv[np.newaxis])
+
     #разделение на области
     #Т.к. добавлено разделение на яркости и контрастности
     #необходимо понять один у нас цвет или несколько:
     #при каком то условии убирать разделение по среднему на верхнее и нижнее
-    mySqrs = [square(myImg.image, sat[np.newaxis]),square(myImg.image, val[np.newaxis])]
+    mySqrs = []
     for clist in split_colors(chue_values):
-        mySqrs.append(square(myImg.image, clist))
+        mySqrs.append(square(filtredimage, clist))
     
     end_image = np.zeros_like(myImg.image)
     for sqrs in mySqrs:
